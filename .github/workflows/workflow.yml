@@ -20,9 +20,16 @@ jobs:
       #    $WebClient2.DownloadFile("https://drive.google.com/uc?export=download&id=1pqBc7BlU-QQ9nTTXRBd5MjZPJCUp7iz3&confirm=t","AMXShare.zip")
       #    ls
           
+      - name: Clean folder
+        run: |
+          Remove-Item -Path .\*.src
+          Remove-Item -Path .\*.tkn
+          Remove-Item -Path .\*.tko
+          
       - name: compile folder
         run: |
           ls
+          Remove-Item -Path .\*.src
           cd "C:\Program Files (x86)\Common Files\AMXShare\COM"
           .\NLRC.exe "C:\Users\lucaperer\actions-runner\_work\test_CI\test_CI\Source\Main.axs" "-IC:\Users\lucaperer\actions-runner\_work\test_CI\test_CI\Include" "-MC:\Users\lucaperer\actions-runner\_work\test_CI\test_CI\Module" "-xC:\Users\lucaperer\actions-runner\_work\test_CI\test_CI\Compiled"
           ls C:\Users\lucaperer\actions-runner\_work\test_CI\test_CI\Source\
