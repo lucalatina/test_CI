@@ -25,6 +25,6 @@ jobs:
           7z x NetLinxStudioSetup.zip
           7z x AMXShare.zip
           cd AMXShare
-          ls
           cd COM
-          nlrc.exe
+          ls
+          .\nlrc.exe
