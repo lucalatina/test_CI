@@ -16,8 +16,10 @@ jobs:
         run: |
           $WebClient = New-Object System.Net.WebClient
           $WebClient.DownloadFile("https://adn.harmanpro.com/softwares/wares/1846_1596143552/NetLinxStudioSetup_4_4_1914.zip","NetLinxStudioSetup.zip")
-          ls -la
+          ls
           
       - name: unzip folder
-        run: 7z x NetLinxStudioSetup.zip
+        run: |
+          7z x NetLinxStudioSetup.zip
+          ls
 
