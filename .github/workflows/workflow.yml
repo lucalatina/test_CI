@@ -21,5 +21,6 @@ jobs:
       - name: unzip folder
         run: |
           7z x NetLinxStudioSetup.zip
+          Start-Process -FilePath ".\NetLinxStudioSetup_4_4_1914.exe" -Verb runAs -ArgumentList "/qn"
           ls
 
