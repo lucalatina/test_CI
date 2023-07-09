@@ -27,5 +27,5 @@ jobs:
           cd AMXShare
           cd COM
           ls
-          .\nlrc.exe -NC:\Output.txt
+          .\NLRC.exe -NC:\Output.txt
           ls
