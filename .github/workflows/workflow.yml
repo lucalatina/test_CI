@@ -20,10 +20,8 @@ jobs:
           
       - name: unzip folder
         run: |
+          ls "c:\Program Files (x86)\Common Files"
           7z x NetLinxStudioSetup.zip
           Start-Process -FilePath ".\NetLinxStudioSetup_4_4_1914.exe" -Verb runAs -ArgumentList "/qn"
           ls c:\
-          ls d:\
-          ls c:\Program Files (x86)\
-          ls d:\Program Files (x86)\
-
+          ls "c:\Program Files (x86)\Common Files"
