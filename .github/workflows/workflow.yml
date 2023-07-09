@@ -22,6 +22,6 @@ jobs:
           
       - name: unzip folder
         run: |
-          ls "c:\Program Files (x86)\Common Files"
           7z x NetLinxStudioSetup.zip
+          7z x AMXShare.zip
           ls
