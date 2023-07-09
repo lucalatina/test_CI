@@ -22,8 +22,7 @@ jobs:
           
       - name: compile folder
         run: |
-          pwd
           ls
           cd "C:\Program Files (x86)\Common Files\AMXShare\COM"
-          #NLRC.exe "D:\a\test_CI\test_CI\Source\Main.axs" "-ID:\a\test_CI\test_CI\Include" "-MD:\a\test_CI\test_CI\Module" "-xD:\a\test_CI\test_CI\Compiled"
-          #ls D:\a\test_CI\test_CI\Source\
+          NLRC.exe "D:\a\test_CI\test_CI\Source\Main.axs" "-ID:\a\test_CI\test_CI\Include" "-MD:\a\test_CI\test_CI\Module" "-xD:\a\test_CI\test_CI\Compiled"
+          ls D:\a\test_CI\test_CI\Source\
