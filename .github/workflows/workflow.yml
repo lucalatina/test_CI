@@ -24,8 +24,7 @@ jobs:
         run: |
           7z x NetLinxStudioSetup.zip
           7z x AMXShare.zip
-          cd AMXShare
-          cd COM
-          ls
-          NLRC.exe -NC:\Output.txt
-          ls
+          cd AMXShare\COM
+          ls D:\a\test_CI\test_CI\Source\
+          .\NLRC.exe "D:\a\test_CI\test_CI\Source\Main.axs" "-ID:\a\test_CI\test_CI\Include" "-MD:\a\test_CI\test_CI\Module"
+          ls D:\a\test_CI\test_CI\Source\
