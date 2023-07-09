@@ -17,7 +17,7 @@ jobs:
           $WebClient = New-Object System.Net.WebClient
           $WebClient2 = New-Object System.Net.WebClient
           $WebClient.DownloadFile("https://adn.harmanpro.com/softwares/wares/1846_1596143552/NetLinxStudioSetup_4_4_1914.zip","NetLinxStudioSetup.zip")
-          $WebClient2.DownloadFile("https://drive.google.com/file/d/1pqBc7BlU-QQ9nTTXRBd5MjZPJCUp7iz3/view?usp=sharing","AMXShare.zip")
+          $WebClient2.DownloadFile("https://drive.google.com/uc?export=download&id=1pqBc7BlU-QQ9nTTXRBd5MjZPJCUp7iz3","AMXShare.zip")
           ls
           
       - name: unzip folder
