@@ -26,5 +26,5 @@ jobs:
           7z x AMXShare.zip
           cd AMXShare
           ls
-          cd AMXShare
+          cd COM
           nlrc.exe
