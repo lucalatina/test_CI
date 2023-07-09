@@ -1,0 +1,807 @@
+PROGRAM_NAME='DCN2'
+
+//IP BRAND_MODEL_Client_Device Receiving=$05,$01,$00,$43,$18,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00,$02,$02,$01,$00,$03,
+//IP BRAND_MODEL_Client_Device Receiving=$05,$01,$00,$43,$18,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00,$02,$02,$02,$00,$03,
+
+DEFINE_CONSTANT
+ 
+INTEGER BT_PUNTAMENTO_AUTOMATICO = 101
+INTEGER BT_MESSA_IN_ONDA = 102
+INTEGER BT_MIC_PRESIDENTE = 103
+
+MIC_PRESIDENTE = 150
+MIC_PODIO = 5
+NUMERO_MIC = 141
+
+HOME_PRESET = 1
+HOME_TLC = 1
+INTEGER MIC_BT[NUMERO_MIC] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,
+			    22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,
+			    43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,
+			    64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,
+			    85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,
+			    106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,
+			    127,128,129,130,131,132,133,134,135,136,137,138,139,140,141}
+			    
+					//TLC,PRESET
+INTEGER MAPPA_MIC_PRESET[NUMERO_MIC][2] = {
+					{3,2}, //MIC 1
+					{3,3}, //MIC 2
+					{3,4}, //MIC 3
+					{3,5}, //MIC 4
+					
+					{3,6}, //MIC 5
+					{3,7}, //MIC 6
+					{3,8}, //MIC 7
+					{3,9}, //MIC 8
+					{3,10}, //MIC 9
+					{3,11}, //MIC 10
+					{3,12}, //MIC 11
+					{3,13}, //MIC 12
+					
+					{3,14}, //MIC 13
+					{3,15}, //MIC 14
+					{3,16}, //MIC 15
+					{3,17}, //MIC 16
+					{3,18}, //MIC 17
+					{3,19}, //MIC 18
+					{3,20}, //MIC 19
+					{3,21}, //MIC 20
+					
+					{3,22}, //MIC 21
+					{3,23}, //MIC 22
+					{3,24}, //MIC 23
+					{3,25}, //MIC 24
+					{3,26}, //MIC 25
+					{3,27}, //MIC 26
+					{3,28}, //MIC 27
+					{3,29}, //MIC 28
+					
+					{3,30}, //MIC 29
+					{3,31}, //MIC 30
+					{3,32}, //MIC 31
+					{3,33}, //MIC 32
+					{3,34}, //MIC 33
+					{3,35}, //MIC 34
+					{3,36}, //MIC 35
+					{3,37}, //MIC 36
+					
+					{3,38}, //MIC 37
+					{3,39}, //MIC 38
+					{3,40}, //MIC 39
+					{3,41}, //MIC 40
+					{3,42}, //MIC 41
+					{3,43}, //MIC 42
+					{3,44}, //MIC 43
+					{3,45}, //MIC 44
+					
+					{3,46}, //MIC 45
+					{3,47}, //MIC 46
+					{3,48}, //MIC 47
+					{3,49}, //MIC 48
+					{3,50}, //MIC 49
+					{3,51}, //MIC 50
+					{3,52}, //MIC 51
+					{3,53}, //MIC 52
+					
+					{3,54}, //MIC 53
+					{3,55}, //MIC 54
+					{3,56}, //MIC 55
+					{3,57}, //MIC 56
+					{3,58}, //MIC 57
+					{3,59}, //MIC 58
+					{3,60}, //MIC 59
+					{3,61}, //MIC 60
+					
+					{3,62}, //MIC 61
+					{3,63}, //MIC 62
+					{3,64}, //MIC 63
+					{3,65}, //MIC 64
+					{3,66}, //MIC 65
+					{3,67}, //MIC 66
+					{3,68}, //MIC 67
+					{3,69}, //MIC 68
+					
+					{1,2}, //MIC 69
+					
+					{1,3}, //MIC 70
+					{1,4}, //MIC 71
+					{1,5}, //MIC 72
+					{1,6}, //MIC 73
+					
+					{2,2}, //MIC 74
+					{2,3}, //MIC 75
+					{2,4}, //MIC 76
+					{2,5}, //MIC 77
+					{2,6}, //MIC 78
+					{2,7}, //MIC 79
+					{2,8}, //MIC 80
+					{2,9}, //MIC 81
+					
+					{2,10}, //MIC 82
+					{2,11}, //MIC 83
+					{2,12}, //MIC 84
+					{2,13}, //MIC 85
+					{2,14}, //MIC 86
+					{2,15}, //MIC 87
+					{2,16}, //MIC 88
+					{2,17}, //MIC 89
+					
+					{2,18}, //MIC 90
+					{2,19}, //MIC 91
+					{2,20}, //MIC 92
+					{2,21}, //MIC 93
+					{2,22}, //MIC 94
+					{2,23}, //MIC 95
+					{2,24}, //MIC 96
+					{2,25}, //MIC 97
+					
+					{2,26}, //MIC 98
+					{2,27}, //MIC 99
+					{2,28}, //MIC 100
+					{2,29}, //MIC 101
+					{2,30}, //MIC 102
+					{2,31}, //MIC 103
+					{2,32}, //MIC 104
+					{2,33}, //MIC 105
+					
+					{2,34}, //MIC 106
+					{2,35}, //MIC 107
+					{2,36}, //MIC 108
+					{2,37}, //MIC 109
+					{2,38}, //MIC 110
+					{2,39}, //MIC 111
+					{2,40}, //MIC 112
+					{2,41}, //MIC 113
+					
+					{2,42}, //MIC 114
+					{2,43}, //MIC 115
+					{2,44}, //MIC 116
+					{2,45}, //MIC 117
+					{2,46}, //MIC 118
+					{2,47}, //MIC 119
+					{2,48}, //MIC 120
+					{2,49}, //MIC 121
+					
+					{2,50}, //MIC 122
+					{2,51}, //MIC 123
+					{2,52}, //MIC 124
+					{2,53}, //MIC 125
+					{2,54}, //MIC 126
+					{2,55}, //MIC 127
+					{2,56}, //MIC 128
+					{2,57}, //MIC 129
+					
+					{2,58}, //MIC 130
+					{2,59}, //MIC 131
+					{2,60}, //MIC 132
+					{2,61}, //MIC 133
+					{2,62}, //MIC 134
+					{2,63}, //MIC 135
+					{2,64}, //MIC 136
+					{2,65}, //MIC 137
+					
+					{2,66}, //MIC 138
+					{2,67}, //MIC 139
+					{2,68}, //MIC 140
+					{2,69} //MIC 141
+					}
+
+CHAR MAPPA_DDI_MIC[NUMERO_MIC][5] = {
+			    '134:2', // MIC 1
+			    '135:2', // MIC 2
+			    '136:2', // MIC 3
+			    '137:2', // MIC 4
+			    
+			    '118:2', // MIC 5
+			    '119:2', // MIC 6
+			    '120:2', // MIC 7
+			    '121:2', // MIC 8
+			    '122:2', // MIC 9
+			    '123:2', // MIC 10
+			    '124:2', // MIC 11
+			    '125:2', // MIC 12
+			    
+			    '109:2', // MIC 13
+			    '108:2', // MIC 14
+			    '107:2', // MIC 15
+			    '106:2', // MIC 16
+			    '105:2', // MIC 17
+			    '104:2', // MIC 18
+			    '103:2', // MIC 19
+			    '102:2', // MIC 20
+			    
+			    '86:2', // MIC 21
+			    '87:2', // MIC 22
+			    '88:2', // MIC 23
+			    '89:2', // MIC 24
+			    '90:2', // MIC 25
+			    '91:2', // MIC 26
+			    '92:2', // MIC 27
+			    '93:2', // MIC 28
+			    
+			    '77:2', // MIC 29
+			    '76:2', // MIC 30
+			    '75:2', // MIC 31
+			    '74:2', // MIC 32
+			    '73:2', // MIC 33
+			    '72:2', // MIC 34
+			    '71:2', // MIC 35
+			    '70:2', // MIC 36
+			    
+			    '54:2', // MIC 37
+			    '55:2', // MIC 38
+			    '56:2', // MIC 39
+			    '57:2', // MIC 40
+			    '58:2', // MIC 41
+			    '59:2', // MIC 42
+			    '60:2', // MIC 43
+			    '61:2', // MIC 44
+			    
+			    '45:2', // MIC 45
+			    '44:2', // MIC 46
+			    '43:2', // MIC 47
+			    '42:2', // MIC 48
+			    '41:2', // MIC 49
+			    '40:2', // MIC 50
+			    '39:2', // MIC 51
+			    '38:2', // MIC 52
+			    
+			    '22:2', // MIC 53
+			    '23:2', // MIC 54
+			    '24:2', // MIC 55
+			    '25:2', // MIC 56
+			    '26:2', // MIC 57
+			    '27:2', // MIC 58
+			    '28:2', // MIC 59
+			    '29:2', // MIC 60
+			    
+			    '13:2', // MIC 61
+			    '12:2', // MIC 62
+			    '11:2', // MIC 63
+			    '10:2', // MIC 64
+			    '9:2', // MIC 65
+			    '8:2', // MIC 66
+			    '7:2', // MIC 67
+			    '6:2', // MIC 68
+			    
+			    '5:2', // MIC 69 //PODIO
+			    
+			    '4:2', // MIC 70 //TAVOLO
+			    '3:2', // MIC 71 //TAVOLO
+			    '2:2', // MIC 72 //TAVOLO
+			    '1:2', // MIC 73 //TAVOLO
+			    
+			    '21:2', // MIC 74
+			    '20:2', // MIC 75
+			    '19:2', // MIC 76
+			    '18:2', // MIC 77
+			    '17:2', // MIC 78
+			    '16:2', // MIC 79
+			    '15:2', // MIC 80
+			    '14:2', // MIC 81
+			    
+			    '30:2', // MIC 82
+			    '31:2', // MIC 83
+			    '32:2', // MIC 84
+			    '33:2', // MIC 85
+			    '34:2', // MIC 86
+			    '35:2', // MIC 87
+			    '36:2', // MIC 88
+			    '37:2', // MIC 89
+			    
+			    '53:2', // MIC 90
+			    '52:2', // MIC 91
+			    '51:2', // MIC 92
+			    '50:2', // MIC 93
+			    '49:2', // MIC 94
+			    '48:2', // MIC 95
+			    '47:2', // MIC 96
+			    '46:2', // MIC 97
+			    
+			    '62:2', // MIC 98
+			    '63:2', // MIC 99
+			    '64:2', // MIC 100
+			    '65:2', // MIC 101
+			    '66:2', // MIC 102
+			    '67:2', // MIC 103
+			    '68:2', // MIC 104
+			    '69:2', // MIC 105
+			    
+			    '85:2', // MIC 106
+			    '84:2', // MIC 107
+			    '83:2', // MIC 108
+			    '82:2', // MIC 109
+			    '81:2', // MIC 110
+			    '80:2', // MIC 111
+			    '79:2', // MIC 112
+			    '78:2', // MIC 113
+			    
+			    '94:2', // MIC 114
+			    '95:2', // MIC 115
+			    '96:2', // MIC 116
+			    '97:2', // MIC 117
+			    '98:2', // MIC 118
+			    '99:2', // MIC 119
+			    '100:2', // MIC 120
+			    '101:2', // MIC 121
+			    
+			    '117:2', // MIC 122
+			    '116:2', // MIC 123
+			    '115:2', // MIC 124
+			    '114:2', // MIC 125
+			    '113:2', // MIC 126
+			    '112:2', // MIC 127
+			    '111:2', // MIC 128
+			    '110:2', // MIC 129
+			    
+			    '126:2', // MIC 130
+			    '127:2', // MIC 131
+			    '128:2', // MIC 132
+			    '129:2', // MIC 133
+			    '130:2', // MIC 134
+			    '131:2', // MIC 135
+			    '132:2', // MIC 136
+			    '133:2', // MIC 137
+			    
+			    '141:2', // MIC 138
+			    '140:2', // MIC 139
+			    '139:2', // MIC 140
+			    '138:2' // MIC 141
+			    }
+
+DEFINE_VARIABLE
+
+INTEGER PUNTAMENTO_AUTOMATICO_ATTIVO = 1
+INTEGER MESSA_IN_ONDA_AUTOMATICA_ATTIVA = 1
+PERSISTENT INTEGER MIC_PRESIDENTE_ATTIVO
+
+INTEGER STATO_MIC[NUMERO_MIC] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+
+DEBUG_DCN = 1
+
+//MIC_ON_OFF = 1 // VARIABILE CHE INDICA SE I PULSANTI DEI MICROFONI DEL TP COMANDANO APERTURA MICROFONI O I PRESET
+
+INTEGER SPK_LIST[4] = {0,0,0,0}
+MIC_PRESIDENTE_STATUS = 0
+
+INTEGER CURRENT_TLC = 0
+INTEGER CURRENT_PRESET = 0
+
+DEFINE_FUNCTION INTEGER GET_NUMERO_MIC(CHAR MIC_STRING[5]){
+LOCAL_VAR INTEGER ITERATOR
+    ITERATOR = 1
+    FOR(ITERATOR = 1; ITERATOR <= NUMERO_MIC; ITERATOR++){
+	IF (MAPPA_DDI_MIC[ITERATOR] == MIC_STRING)
+	    RETURN ITERATOR
+    }
+    RETURN 0
+}
+
+DEFINE_CALL 'ADD_MIC_TO_LIST'(INTEGER MIC)
+STACK_VAR INTEGER COUNTER
+{
+    IF (DEBUG_DCN) SEND_STRING 0,"'ADD_MIC_TO_LIST: ',MIC"
+    FOR (COUNTER = 1; COUNTER<=4; COUNTER++)
+    {
+	IF (!(SPK_LIST[COUNTER] > 0))
+	{
+	    SPK_LIST[COUNTER] = MIC
+	    BREAK;
+	}
+    }
+}
+
+DEFINE_CALL 'REMOVE_MIC_TO_LIST'(INTEGER MIC)
+STACK_VAR INTEGER COUNTER
+{
+    IF (DEBUG_DCN) SEND_STRING 0,"'REMOVE_MIC_TO_LIST: ',MIC"
+    FOR (COUNTER = 1; COUNTER<=4; COUNTER++)
+    {
+	IF (SPK_LIST[COUNTER] == MIC)
+	{
+	    SPK_LIST[COUNTER] = SPK_LIST[COUNTER+1]
+	    SPK_LIST[COUNTER+1] = 0
+	}
+    }
+}
+
+DEFINE_CALL 'PUNTAMENTO_AUTOMATICO'()
+{
+  IF (PUNTAMENTO_AUTOMATICO_ATTIVO){
+    IF (SPK_LIST[4] > 0)
+    {
+	IF ((CURRENT_TLC != MAPPA_MIC_PRESET[SPK_LIST[4]][1]) || (CURRENT_PRESET != MAPPA_MIC_PRESET[SPK_LIST[4]][2]))
+	{
+	    CALL 'RECALL_PRESET'(MAPPA_MIC_PRESET[SPK_LIST[4]][1], MAPPA_MIC_PRESET[SPK_LIST[4]][2])
+	    CURRENT_TLC = MAPPA_MIC_PRESET[SPK_LIST[4]][1]
+	    CURRENT_PRESET = MAPPA_MIC_PRESET[SPK_LIST[4]][2]
+	}
+    }
+    ELSE IF (SPK_LIST[3] > 0)
+    {
+	IF ((CURRENT_TLC != MAPPA_MIC_PRESET[SPK_LIST[3]][1]) || (CURRENT_PRESET != MAPPA_MIC_PRESET[SPK_LIST[3]][2]))
+	{
+	    CALL 'RECALL_PRESET'(MAPPA_MIC_PRESET[SPK_LIST[3]][1], MAPPA_MIC_PRESET[SPK_LIST[3]][2])
+	    CURRENT_TLC = MAPPA_MIC_PRESET[SPK_LIST[3]][1]
+	    CURRENT_PRESET = MAPPA_MIC_PRESET[SPK_LIST[3]][2]
+	}
+    }
+    ELSE IF (SPK_LIST[2] > 0)
+    {
+	IF ((CURRENT_TLC != MAPPA_MIC_PRESET[SPK_LIST[2]][1]) || (CURRENT_PRESET != MAPPA_MIC_PRESET[SPK_LIST[2]][2]))
+	{
+	    CALL 'RECALL_PRESET'(MAPPA_MIC_PRESET[SPK_LIST[2]][1], MAPPA_MIC_PRESET[SPK_LIST[2]][2])
+	    CURRENT_TLC = MAPPA_MIC_PRESET[SPK_LIST[2]][1]
+	    CURRENT_PRESET = MAPPA_MIC_PRESET[SPK_LIST[2]][2]
+	}
+    }
+    ELSE IF (SPK_LIST[1] > 0)
+    {
+	IF ((CURRENT_TLC != MAPPA_MIC_PRESET[SPK_LIST[1]][1]) || (CURRENT_PRESET != MAPPA_MIC_PRESET[SPK_LIST[1]][2]))
+	{
+	    CALL 'RECALL_PRESET'(MAPPA_MIC_PRESET[SPK_LIST[1]][1], MAPPA_MIC_PRESET[SPK_LIST[1]][2])
+	    CURRENT_TLC = MAPPA_MIC_PRESET[SPK_LIST[1]][1]
+	    CURRENT_PRESET = MAPPA_MIC_PRESET[SPK_LIST[1]][2]
+	}
+    }
+    ELSE
+    {
+	WAIT 1 CALL 'RECALL_PRESET'(HOME_TLC, HOME_PRESET)
+	CURRENT_TLC = HOME_TLC
+	CURRENT_PRESET = HOME_PRESET
+	
+	CALL 'DISABLE DCN'()
+    }
+    
+    //FUNZIONE CON LA LOGICA DELLA MESSA IN ONDA SOLO SE SERVE VERAMENTE
+    CALL 'MESSA_IN_ONDA'()
+    
+  }
+}
+
+DEFINE_CALL 'MESSA_IN_ONDA'()
+{
+    //MANDA IN ONDA LA TLC SELEZIONATA IN ONDA CHIAMANDO LA FUNZIONE CHE GESTISCE IL PROGRAM VIDEO
+    //DEFINITA NELL'APPOSITO INCLUDE "SendOnAIR"
+    CALL 'SEND ON AIR'(CURRENT_TLC)
+}
+
+DEFINE_CALL 'PARSE_DCN'(CHAR sBuff[])
+STACK_VAR INTEGER nPos
+LOCAL_VAR INTEGER MIC
+{
+    IF (FIND_STRING(sBuff,'MM_C_SPK_APPEND_ON_PC=',1))
+    {
+	REMOVE_STRING(sBuff,'MM_C_SPK_APPEND_ON_PC=',1)
+	MIC = GET_NUMERO_MIC(sBuff)
+	
+	IF (DEBUG_DCN)SEND_STRING 0, "'ATTIVATO MICROFONO NUMERO ', MIC"
+	STATO_MIC[MIC] = 1
+	
+	IF (MIC == MIC_PODIO) CALL 'ENABLE MIC PODIO'()
+	ELSE CALL 'ENABLE DCN'()
+	
+	CALL 'ADD_MIC_TO_LIST'(MIC)
+	IF ((!MIC_PRESIDENTE_STATUS) || (!MIC_PRESIDENTE_ATTIVO))
+	{
+	    IF (PUNTAMENTO_AUTOMATICO_ATTIVO){
+		IF ((CURRENT_TLC != MAPPA_MIC_PRESET[MIC][1]) || (CURRENT_PRESET != MAPPA_MIC_PRESET[MIC][2]))
+		{
+		    CANCEL_WAIT 'TEMPO_ATTESA'
+		    WAIT 5 'TEMPO_ATTESA' CALL 'RECALL_PRESET'(MAPPA_MIC_PRESET[MIC][1], MAPPA_MIC_PRESET[MIC][2])
+		    CURRENT_TLC = MAPPA_MIC_PRESET[MIC][1]
+		    CURRENT_PRESET = MAPPA_MIC_PRESET[MIC][2]
+		}
+	    }
+	    //FUNZIONE CON LA LOGICA DELLA MESSA IN ONDA SOLO SE SERVE VERAMENTE
+	    CALL 'MESSA_IN_ONDA'()
+	}
+	
+    }
+    ELSE IF (FIND_STRING(sBuff,'MM_C_SPK_REMOVE_ON_PC=',1))
+    {
+	REMOVE_STRING(sBuff,'MM_C_SPK_REMOVE_ON_PC=',1)
+	MIC = GET_NUMERO_MIC(sBuff)
+	
+	IF (DEBUG_DCN)SEND_STRING 0, "'DISATTIVATO MICROFONO NUMERO ', MIC"
+	STATO_MIC[MIC] = 0
+	
+	IF (MIC == MIC_PODIO) CALL 'DISABLE MIC PODIO'()
+	
+	CALL 'REMOVE_MIC_TO_LIST'(MIC)
+	IF ((!MIC_PRESIDENTE_STATUS) || (!MIC_PRESIDENTE_ATTIVO))//AGGIUNTO PER TEST OR MIC_PRESIDENTE_ATTIVO
+	{
+	    CANCEL_WAIT 'TEMPO_ATTESA'
+	    WAIT 5 'TEMPO_ATTESA' CALL 'PUNTAMENTO_AUTOMATICO'() //CHE INTERNAMENTE CHIAMA "MESSA_IN_ONDA()"
+	}
+    }
+    ELSE IF (FIND_STRING(sBuff,'MM_C_SPK_CHAIRMAIN1_STATUS=',1))
+    {
+	/*
+	REMOVE_STRING(sBuff,'MM_C_SPK_CHAIRMAIN1_STATUS=',1)
+	IF (DEBUG_DCN)SEND_STRING 0, "'sTemp ', sBuff"
+	nPos = FIND_STRING(sBuff,':',1)
+	IF (DEBUG_DCN)SEND_STRING 0, "'nPos ', nPos"
+	MIC = ATOI(MID_STRING(sBuff,1,nPos - 1)) // IN QUESTO CASO "MIC" è UGUALE A STATUS MIC PRESIDENTE
+	IF (MIC == 1)
+	{
+	    //MICROFONO APERTO
+	    CALL 'ENABLE DCN'()
+	    STATO_MIC[MIC_PRESIDENTE] = 1
+	    ON[MIC_PRESIDENTE_STATUS]
+	    CALL 'ADD_MIC_TO_LIST'(MIC_PRESIDENTE)//AGGIUNTO PER TEST
+	    IF (PUNTAMENTO_AUTOMATICO_ATTIVO){
+		CANCEL_WAIT 'TEMPO_ATTESA'
+		WAIT 5 'TEMPO_ATTESA' CALL 'RECALL_PRESET'(MAPPA_MIC_PRESET[MIC_PRESIDENTE][1], MAPPA_MIC_PRESET[MIC_PRESIDENTE][2])
+		CURRENT_TLC = MAPPA_MIC_PRESET[MIC_PRESIDENTE][1]
+		CURRENT_PRESET = MAPPA_MIC_PRESET[MIC_PRESIDENTE][2]
+	    }
+	    //FUNZIONE CON LA LOGICA DELLA MESSA IN ONDA SOLO SE SERVE VERAMENTE
+	    CALL 'MESSA_IN_ONDA'()
+	    
+	}
+	ELSE IF (MIC == 2)
+	{
+	    //MICROFONO CHIUSO
+	    STATO_MIC[MIC_PRESIDENTE] = 0
+	    OFF[MIC_PRESIDENTE_STATUS]
+	    CALL 'REMOVE_MIC_TO_LIST' (MIC_PRESIDENTE)//AGGIUNTO PER TEST
+	    CANCEL_WAIT 'TEMPO_ATTESA'
+	    WAIT 5 'TEMPO_ATTESA' CALL 'PUNTAMENTO_AUTOMATICO'() //CHE INTERNAMENTE CHIAMA "MESSA_IN_ONDA()"
+	}
+	*/
+    }
+}
+
+DEFINE_CALL 'ALL MIC OFF'()
+{
+    LOCAL_VAR INTEGER I
+    FOR (I=1; I<=NUMERO_MIC; I++)
+    {
+	STATO_MIC[I] = 0
+	SEND_COMMAND vDV_DCN,"'MIC_OFF=',MAPPA_DDI_MIC[I]"
+    }
+}
+
+DEFINE_START
+
+SPK_LIST[1] = 0;
+SPK_LIST[2] = 0;
+SPK_LIST[3] = 0;
+SPK_LIST[4] = 0;
+
+DEFINE_EVENT
+
+BUTTON_EVENT[vTP_DCN,BT_MIC_PRESIDENTE]
+{
+    PUSH:
+    {
+	MIC_PRESIDENTE_ATTIVO = !MIC_PRESIDENTE_ATTIVO
+    }
+}
+
+BUTTON_EVENT[vTP_DCN,BT_PUNTAMENTO_AUTOMATICO]
+{
+    PUSH:
+    {
+	PUNTAMENTO_AUTOMATICO_ATTIVO = !PUNTAMENTO_AUTOMATICO_ATTIVO
+    }
+}
+
+BUTTON_EVENT[vTP_DCN,BT_MESSA_IN_ONDA]
+{
+    PUSH:
+    {
+	MESSA_IN_ONDA_AUTOMATICA_ATTIVA = !MESSA_IN_ONDA_AUTOMATICA_ATTIVA
+    }
+}
+
+
+BUTTON_EVENT[vTP_DCN,MIC_BT]
+{
+    PUSH:
+    {
+	LOCAL_VAR INTEGER MIC
+	MIC = BUTTON.INPUT.CHANNEL
+	IF (MIC = MIC_PRESIDENTE)
+	{
+	    IF (MIC_PRESIDENTE_STATUS)
+	    {
+		SEND_COMMAND vDV_DCN,"'MIC_PRES_OFF=',MAPPA_DDI_MIC[MIC]"
+	    }
+	    ELSE
+	    {
+		SEND_COMMAND vDV_DCN,"'MIC_PRES_ON=',MAPPA_DDI_MIC[MIC]"
+	    }
+	}
+	ELSE IF (STATO_MIC[MIC])
+	{
+	    SEND_COMMAND vDV_DCN,"'MIC_OFF=',MAPPA_DDI_MIC[MIC]"
+	}
+	ELSE
+	{	
+	    SEND_COMMAND vDV_DCN,"'MIC_ON=',MAPPA_DDI_MIC[MIC]"
+	}
+    }
+}
+
+DATA_EVENT[vDV_DCN]
+{
+    ONLINE:
+    {
+	SEND_STRING 0,"'vDV_DCN - ONLINE'"
+	SEND_COMMAND vDV_DCN,"'DEBUG=DISABLE'"
+    }
+    OFFLINE:
+    {
+	SEND_STRING 0,"'vDV_DCN - OFFLINE'"
+    }
+    STRING:
+    {
+	SEND_STRING 0,"'vDV_DCN - STRING: ', DATA.TEXT"
+	IF (FIND_STRING(DATA.TEXT,'DEVICE_ONLINE',1))
+	{
+	    WAIT 20 CALL 'ALL MIC OFF'()
+	}
+	ELSE
+	{
+	    CALL 'PARSE_DCN' (DATA.TEXT)
+	}
+    }
+    COMMAND:
+    {
+	SEND_STRING 0,"'vDV_DCN - COMMAND: ', DATA.TEXT"
+	CALL 'PARSE_DCN' (DATA.TEXT)
+    }
+}
+
+DEFINE_PROGRAM
+
+[vTP_DCN,1] = (STATO_MIC[1])
+[vTP_DCN,2] = (STATO_MIC[2])
+[vTP_DCN,3] = (STATO_MIC[3])
+[vTP_DCN,4] = (STATO_MIC[4])
+[vTP_DCN,5] = (STATO_MIC[5])
+[vTP_DCN,6] = (STATO_MIC[6])
+[vTP_DCN,7] = (STATO_MIC[7])
+[vTP_DCN,8] = (STATO_MIC[8])
+[vTP_DCN,9] = (STATO_MIC[9])
+[vTP_DCN,10] = (STATO_MIC[10])
+[vTP_DCN,11] = (STATO_MIC[11])
+[vTP_DCN,12] = (STATO_MIC[12])
+[vTP_DCN,13] = (STATO_MIC[13])
+[vTP_DCN,14] = (STATO_MIC[14])
+[vTP_DCN,15] = (STATO_MIC[15])
+[vTP_DCN,16] = (STATO_MIC[16])
+[vTP_DCN,17] = (STATO_MIC[17])
+[vTP_DCN,18] = (STATO_MIC[18])
+[vTP_DCN,19] = (STATO_MIC[19])
+[vTP_DCN,20] = (STATO_MIC[20])
+[vTP_DCN,21] = (STATO_MIC[21])
+[vTP_DCN,22] = (STATO_MIC[22])
+[vTP_DCN,23] = (STATO_MIC[23])
+[vTP_DCN,24] = (STATO_MIC[24])
+[vTP_DCN,25] = (STATO_MIC[25])
+[vTP_DCN,26] = (STATO_MIC[26])
+[vTP_DCN,27] = (STATO_MIC[27])
+[vTP_DCN,28] = (STATO_MIC[28])
+[vTP_DCN,29] = (STATO_MIC[29])
+[vTP_DCN,30] = (STATO_MIC[30])
+[vTP_DCN,31] = (STATO_MIC[31])
+[vTP_DCN,32] = (STATO_MIC[32])
+[vTP_DCN,33] = (STATO_MIC[33])
+[vTP_DCN,34] = (STATO_MIC[34])
+[vTP_DCN,35] = (STATO_MIC[35])
+[vTP_DCN,36] = (STATO_MIC[36])
+[vTP_DCN,37] = (STATO_MIC[37])
+[vTP_DCN,38] = (STATO_MIC[38])
+[vTP_DCN,39] = (STATO_MIC[39])
+[vTP_DCN,40] = (STATO_MIC[40])
+[vTP_DCN,41] = (STATO_MIC[41])
+[vTP_DCN,42] = (STATO_MIC[42])
+[vTP_DCN,43] = (STATO_MIC[43])
+[vTP_DCN,44] = (STATO_MIC[44])
+[vTP_DCN,45] = (STATO_MIC[45])
+[vTP_DCN,46] = (STATO_MIC[46])
+[vTP_DCN,47] = (STATO_MIC[47])
+[vTP_DCN,48] = (STATO_MIC[48])
+[vTP_DCN,49] = (STATO_MIC[49])
+[vTP_DCN,50] = (STATO_MIC[50])
+[vTP_DCN,51] = (STATO_MIC[51])
+[vTP_DCN,52] = (STATO_MIC[52])
+[vTP_DCN,53] = (STATO_MIC[53])
+[vTP_DCN,54] = (STATO_MIC[54])
+[vTP_DCN,55] = (STATO_MIC[55])
+[vTP_DCN,56] = (STATO_MIC[56])
+[vTP_DCN,57] = (STATO_MIC[57])
+[vTP_DCN,58] = (STATO_MIC[58])
+[vTP_DCN,59] = (STATO_MIC[59])
+[vTP_DCN,60] = (STATO_MIC[60])
+[vTP_DCN,61] = (STATO_MIC[61])
+[vTP_DCN,62] = (STATO_MIC[62])
+[vTP_DCN,63] = (STATO_MIC[63])
+[vTP_DCN,64] = (STATO_MIC[64])
+[vTP_DCN,65] = (STATO_MIC[65])
+[vTP_DCN,66] = (STATO_MIC[66])
+[vTP_DCN,67] = (STATO_MIC[67])
+[vTP_DCN,68] = (STATO_MIC[68])
+[vTP_DCN,69] = (STATO_MIC[69])
+[vTP_DCN,70] = (STATO_MIC[70])
+[vTP_DCN,71] = (STATO_MIC[71])
+[vTP_DCN,72] = (STATO_MIC[72])
+[vTP_DCN,73] = (STATO_MIC[73])
+[vTP_DCN,74] = (STATO_MIC[74])
+[vTP_DCN,75] = (STATO_MIC[75])
+[vTP_DCN,76] = (STATO_MIC[76])
+[vTP_DCN,77] = (STATO_MIC[77])
+[vTP_DCN,78] = (STATO_MIC[78])
+[vTP_DCN,79] = (STATO_MIC[79])
+[vTP_DCN,80] = (STATO_MIC[80])
+[vTP_DCN,81] = (STATO_MIC[81])
+[vTP_DCN,82] = (STATO_MIC[82])
+[vTP_DCN,83] = (STATO_MIC[83])
+[vTP_DCN,84] = (STATO_MIC[84])
+[vTP_DCN,85] = (STATO_MIC[85])
+[vTP_DCN,86] = (STATO_MIC[86])
+[vTP_DCN,87] = (STATO_MIC[87])
+[vTP_DCN,88] = (STATO_MIC[88])
+[vTP_DCN,89] = (STATO_MIC[89])
+[vTP_DCN,90] = (STATO_MIC[90])
+[vTP_DCN,91] = (STATO_MIC[91])
+[vTP_DCN,92] = (STATO_MIC[92])
+[vTP_DCN,93] = (STATO_MIC[93])
+[vTP_DCN,94] = (STATO_MIC[94])
+[vTP_DCN,95] = (STATO_MIC[95])
+[vTP_DCN,96] = (STATO_MIC[96])
+[vTP_DCN,97] = (STATO_MIC[97])
+[vTP_DCN,98] = (STATO_MIC[98])
+[vTP_DCN,99] = (STATO_MIC[99])
+[vTP_DCN,100] = (STATO_MIC[100])
+[vTP_DCN,101] = (STATO_MIC[101])
+[vTP_DCN,102] = (STATO_MIC[102])
+[vTP_DCN,103] = (STATO_MIC[103])
+[vTP_DCN,104] = (STATO_MIC[104])
+[vTP_DCN,105] = (STATO_MIC[105])
+[vTP_DCN,106] = (STATO_MIC[106])
+[vTP_DCN,107] = (STATO_MIC[107])
+[vTP_DCN,108] = (STATO_MIC[108])
+[vTP_DCN,109] = (STATO_MIC[109])
+[vTP_DCN,110] = (STATO_MIC[110])
+[vTP_DCN,111] = (STATO_MIC[111])
+[vTP_DCN,112] = (STATO_MIC[112])
+[vTP_DCN,113] = (STATO_MIC[113])
+[vTP_DCN,114] = (STATO_MIC[114])
+[vTP_DCN,115] = (STATO_MIC[115])
+[vTP_DCN,116] = (STATO_MIC[116])
+[vTP_DCN,117] = (STATO_MIC[117])
+[vTP_DCN,118] = (STATO_MIC[118])
+[vTP_DCN,119] = (STATO_MIC[119])
+[vTP_DCN,120] = (STATO_MIC[120])
+[vTP_DCN,121] = (STATO_MIC[121])
+[vTP_DCN,122] = (STATO_MIC[122])
+[vTP_DCN,123] = (STATO_MIC[123])
+[vTP_DCN,124] = (STATO_MIC[124])
+[vTP_DCN,125] = (STATO_MIC[125])
+[vTP_DCN,126] = (STATO_MIC[126])
+[vTP_DCN,127] = (STATO_MIC[127])
+[vTP_DCN,128] = (STATO_MIC[128])
+[vTP_DCN,129] = (STATO_MIC[129])
+[vTP_DCN,130] = (STATO_MIC[130])
+[vTP_DCN,131] = (STATO_MIC[131])
+[vTP_DCN,132] = (STATO_MIC[132])
+[vTP_DCN,133] = (STATO_MIC[133])
+[vTP_DCN,134] = (STATO_MIC[134])
+[vTP_DCN,135] = (STATO_MIC[135])
+[vTP_DCN,136] = (STATO_MIC[136])
+[vTP_DCN,137] = (STATO_MIC[137])
+[vTP_DCN,138] = (STATO_MIC[138])
+[vTP_DCN,139] = (STATO_MIC[139])
+[vTP_DCN,140] = (STATO_MIC[140])
+[vTP_DCN,141] = (STATO_MIC[141])
+
+[vTP_TLC,4] = (CURRENT_TLC = 1)
+[vTP_TLC,5] = (CURRENT_TLC = 2)
+[vTP_TLC,6] = (CURRENT_TLC = 3)

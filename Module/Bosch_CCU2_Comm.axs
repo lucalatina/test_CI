@@ -1,0 +1,506 @@
+MODULE_NAME='Bosch_CCU2_Comm' (DEV BRAND_MODEL_vdv_Device, DEV BRAND_MODEL_Client_Device)
+(***********************************************************)
+(***********************************************************)
+(*  FILE_LAST_MODIFIED_ON: 04/04/2006  AT: 11:33:16        *)
+(***********************************************************)
+(* System Type : NetLinx                                   *)
+(***********************************************************)
+(* REV HISTORY:                                            *)
+(***********************************************************)
+(*
+    $History: $
+*)    
+(***********************************************************)
+(*          DEVICE NUMBER DEFINITIONS GO BELOW             *)
+(***********************************************************)
+DEFINE_DEVICE
+
+
+(***********************************************************)
+(*               CONSTANT DEFINITIONS GO BELOW             *)
+(***********************************************************)
+DEFINE_CONSTANT
+
+LONG BRAND_MODEL_IP_PORT=9451
+INTEGER BRAND_MODEL_TCP_MODE=IP_TCP
+INTEGER BRAND_MODEL_RECONNECT_TIME=30
+
+TL_ID_HEARTBEAT=1
+LONG TL_ARRAY_HEARTBEAT[]={5000}
+
+TL_ID_FB_POLLING=2
+LONG TL_ARRAY_FB_POLLING[]={300}
+
+CHAR HEARTBEAT_STRING[]={$27,$70,$44,$00,$10,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00}
+CHAR START_MON_MM_STRING[]={$03,$45,$00,$43,$12,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$45,$00} //MM_C_START_MON_MM
+
+//$03,$45,$00,$43 tutto dovrebbe indicare il message type (dword quindi 4 byte)
+//$03 indica una richiesta verso la CCU, 
+//$45,$00 dovrebbe essere il function ID, preso dal file funzioni del DDTK.exe (l'ordine dovrebbe essere invertito)
+//$43 è il Byte Header, sempre presente nei messaggi
+
+//$12,$00,$00,$00 tutto indica il message length (dword quindi 4 byte)
+//$12 in questo caso indica un messaggio di 18 byte (hex to dec), gli altri stanno a 0
+
+//$00,$00,$00,$00,$00,$00,$00,$00,$45,$00 sono i 10 byte di DATI (length - 8)
+//in questo caso, per START_MON_MM il payload dovrebbe essere dummy, quindi va bene qualunque cosa, toricamente
+
+CHAR START_MON_IN_STRING[]={$03,$36,$02,$43,$12,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$36,$02}
+
+// CHAR START_MON_MM_STRING[]={$04,$45,$00,$43,$16,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$45,$00,$00,$00,$02,$00}
+CHAR MM_C_SPK_APPEND_ON_PC[]={$05,$0e,$00,$43,$14,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$0e,$00}
+CHAR MM_C_SPK_REMOVE_ON_PC[]={$05,$0f,$00,$43,$14,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$0f,$00}
+CHAR MM_C_SPK_CHAIRMAIN1_STATUS[]={$05,$01,$00,$43,$18,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00,$02,$02} //IL PENULTIMO NUMERO INDICA L'ID DEL MICROFONO PRESIDENTE!
+CHAR MM_C_SPK_CHAIRMAIN2_STATUS[]={$05,$01,$00,$43,$18,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00,$05,$02}
+
+//APPEND MIC_1 ID_CCU 513//03:30:00:43:14:00:00:00:00:00:00:00:00:00:00:00:30:00:01:02
+//REMOVE MIC_1 ID_CCU 513//03:31:00:43:14:00:00:00:00:00:00:00:00:00:00:00:31:00:01:02
+
+//APPEND MIC_2 ID_CCU 514//03:30:00:43:14:00:00:00:00:00:00:00:00:00:00:00:30:00:02:02
+//APPEND MIC_2 ID_CCU 514//03:31:00:43:14:00:00:00:00:00:00:00:00:00:00:00:31:00:02:02
+
+(***********************************************************)
+(*              DATA TYPE DEFINITIONS GO BELOW             *)
+(***********************************************************)
+DEFINE_TYPE
+
+(***********************************************************)
+(*               VARIABLE DEFINITIONS GO BELOW             *)
+(***********************************************************)
+DEFINE_VARIABLE
+
+VOLATILE CHAR BRAND_MODEL_IP_ADDR[100] = '10.162.4.203'
+
+VOLATILE CHAR BRAND_MODEL_CONNECTED
+VOLATILE CHAR BRAND_MODEL_TALKING
+VOLATILE CHAR BRAND_MODEL_FLAG
+
+VOLATILE CHAR START_MON_MM_SENT
+VOLATILE CHAR START_MON_IN_SENT
+
+VOLATILE CHAR BRAND_MODEL_DEBUG = 1
+
+VOLATILE CHAR BRAND_MODEL_BUFF[255]
+VOLATILE CHAR BRAND_MODEL_vdv_BUFF[255]
+VOLATILE CHAR BRAND_MODEL_MSG[255]
+VOLATILE CHAR BRAND_MODEL_LAST_MSG_SENT[255]
+VOLATILE CHAR BRAND_MODEL_MSG_RECEIVED[255]
+VOLATILE CHAR BRAND_MODEL_PACKET[50]
+
+VOLATILE CHAR IDX
+
+(***********************************************************)
+(*               LATCHING DEFINITIONS GO BELOW             *)
+(***********************************************************)
+DEFINE_LATCHING
+
+(***********************************************************)
+(*       MUTUALLY EXCLUSIVE DEFINITIONS GO BELOW           *)
+(***********************************************************)
+DEFINE_MUTUALLY_EXCLUSIVE
+
+(***********************************************************)
+(*        SUBROUTINE/FUNCTION DEFINITIONS GO BELOW         *)
+(***********************************************************)
+(* EXAMPLE: DEFINE_FUNCTION <RETURN_TYPE> <NAME> (<PARAMETERS>) *)
+(* EXAMPLE: DEFINE_CALL '<NAME>' (<PARAMETERS>) *)
+
+DEFINE_CALL 'ACCENDI MIC PRESIDENTE' (CHAR MIC[])
+{
+    //03,$22,$00,$43,$15,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$22,$00,$04,$02,$01
+    SEND_STRING 0, "'DEBUG: ',MIC"
+    SEND_STRING 0, "'DEBUG1: ',MIC[1]"
+    SEND_STRING 0, "'DEBUG2: ',ATOI(MIC[1])"
+    CALL 'BRAND_MODEL_SEND_STRING' ("03,$22,$00,$43,$15,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$22,$00,$02,$02,$01")
+}
+
+DEFINE_CALL 'SPEGNI MIC PRESIDENTE' (CHAR MIC[])
+{
+    //03,$22,$00,$43,$15,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$22,$00,$04,$02,$00
+    CALL 'BRAND_MODEL_SEND_STRING' ("03,$22,$00,$43,$15,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$22,$00,$02,$02,$00")
+}
+
+//APPEND MIC_1 ID_CCU 513//03:30:00:43:14:00:00:00:00:00:00:00:00:00:00:00:30:00:01:02
+//APPEND MIC_2 ID_CCU 514//03:30:00:43:14:00:00:00:00:00:00:00:00:00:00:00:30:00:02:02
+DEFINE_CALL 'ACCENDI MIC'(CHAR MIC[])
+{
+    LOCAL_VAR CHAR tMIC
+    tMIC = ATOI(LEFT_STRING(MIC,FIND_STRING(MIC,':',1)-1))
+    SEND_STRING 0, "'ACCENDI_MIC-',tMIC"
+    IF (BRAND_MODEL_CONNECTED)
+    {
+	IF (RIGHT_STRING(MIC,1) == '2')
+	    CALL 'BRAND_MODEL_SEND_STRING' ("$03,$30,$00,$43,$14,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$30,$00,tMIC,$02")
+	ELSE IF (RIGHT_STRING(MIC,1) == '3')
+	    CALL 'BRAND_MODEL_SEND_STRING' ("$03,$30,$00,$43,$14,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$30,$00,tMIC,$03")
+    }
+}
+
+
+//REMOVE MIC_1 ID_CCU 513//03:31:00:43:14:00:00:00:00:00:00:00:00:00:00:00:31:00:01:02
+//REMOVE MIC_2 ID_CCU 514//03:31:00:43:14:00:00:00:00:00:00:00:00:00:00:00:31:00:02:02
+DEFINE_CALL 'SPEGNI MIC'(CHAR MIC[])
+{
+    LOCAL_VAR CHAR tMIC
+    tMIC = ATOI(LEFT_STRING(MIC,FIND_STRING(MIC,':',1)-1))
+    SEND_STRING 0, "'SPEGNI_MIC-',tMIC"
+    IF (BRAND_MODEL_CONNECTED)
+    {
+	IF (RIGHT_STRING(MIC,1) == '2')
+	    CALL 'BRAND_MODEL_SEND_STRING' ("$03,$31,$00,$43,$14,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$31,$00,tMIC,$02")
+	ELSE IF (RIGHT_STRING(MIC,1) == '3')
+	    CALL 'BRAND_MODEL_SEND_STRING' ("$03,$31,$00,$43,$14,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$31,$00,tMIC,$03")
+    }
+}
+
+DEFINE_CALL 'BRAND_MODEL_APERTURA_PORTA'
+{
+    IF (BRAND_MODEL_Client_Device.NUMBER == 0)
+    {
+    IF (NOT BRAND_MODEL_CONNECTED)
+	IP_CLIENT_OPEN(BRAND_MODEL_Client_Device.PORT,BRAND_MODEL_IP_ADDR,BRAND_MODEL_IP_PORT,BRAND_MODEL_TCP_MODE)
+    
+    IF (BRAND_MODEL_DEBUG)
+	SEND_STRING 0:1:0,'IP BRAND_MODEL_Client_Device Connection --> Open BRAND_MODEL_IP_PORT'
+    }
+}
+
+DEFINE_CALL 'BRAND_MODEL_CHIUSURA_PORTA'
+{
+    IF (BRAND_MODEL_Client_Device.NUMBER == 0)
+    {
+	IF (BRAND_MODEL_CONNECTED)
+	    IP_CLIENT_CLOSE (BRAND_MODEL_Client_Device.PORT)
+    
+	IF (BRAND_MODEL_DEBUG)
+	    SEND_STRING 0:1:0,'IP BRAND_MODEL_Client_Device Connection --> Close BRAND_MODEL_IP_PORT'
+    }
+}
+
+
+DEFINE_FUNCTION CHAR TROVATO_MESSAGGIO()
+LOCAL_VAR
+CHAR RESULT
+{
+    ON[RESULT]
+    RETURN RESULT
+}
+
+DEFINE_CALL 'BRAND_MODEL_INTERPRETA_MESSAGGIO' // (CHAR TXT[])
+{
+    OFF[BRAND_MODEL_FLAG]
+    CANCEL_WAIT 'DELAY_BRAND_MODEL_FLAG_TALKING'
+
+    SELECT
+    {
+	ACTIVE (FIND_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_APPEND_ON_PC",1)) :
+	{
+	    REMOVE_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_APPEND_ON_PC",1)
+	    SEND_STRING BRAND_MODEL_vdv_Device,"'MM_C_SPK_APPEND_ON_PC=',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF)),':',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF))"
+	    // GET_BUFFER_CHAR(BRAND_MODEL_BUFF)
+	}    
+	ACTIVE (FIND_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_REMOVE_ON_PC",1)) :
+	{
+	    REMOVE_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_REMOVE_ON_PC",1)
+	    SEND_STRING BRAND_MODEL_vdv_Device,"'MM_C_SPK_REMOVE_ON_PC=',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF)),':',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF))"
+	    // GET_BUFFER_CHAR(BRAND_MODEL_BUFF)
+	}
+	ACTIVE (FIND_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_CHAIRMAIN1_STATUS",1)) :
+	{
+	    REMOVE_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_CHAIRMAIN1_STATUS",1)
+	    SEND_STRING BRAND_MODEL_vdv_Device,"'MM_C_SPK_CHAIRMAIN1_STATUS=',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF)),':',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF))"
+	    // GET_BUFFER_CHAR(BRAND_MODEL_BUFF)
+	}    
+	ACTIVE (FIND_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_CHAIRMAIN2_STATUS",1)) :
+	{
+	    REMOVE_STRING(BRAND_MODEL_BUFF,"MM_C_SPK_CHAIRMAIN2_STATUS",1)
+	    SEND_STRING BRAND_MODEL_vdv_Device,"'MM_C_SPK_CHAIRMAIN2_STATUS=',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF)),':',ITOA(GET_BUFFER_CHAR(BRAND_MODEL_BUFF))"
+	    // GET_BUFFER_CHAR(BRAND_MODEL_BUFF)
+	}    
+	ACTIVE (FIND_STRING(BRAND_MODEL_BUFF,"HEARTBEAT_STRING",1)) :
+	{
+	    REMOVE_STRING(BRAND_MODEL_BUFF,"HEARTBEAT_STRING",1)
+	    ON[BRAND_MODEL_TALKING]
+	    
+	    IF (NOT START_MON_MM_SENT)
+	    {
+		CALL 'BRAND_MODEL_SEND_STRING' ("START_MON_MM_STRING")
+		ON[START_MON_MM_SENT]
+	    }
+	    ////// TRADUZIONE SIMULTANEA OPEN INTERFACE
+	    IF (NOT START_MON_IN_SENT)
+	    {
+		CALL 'BRAND_MODEL_SEND_STRING' ("START_MON_IN_STRING")
+		ON[START_MON_IN_SENT]
+	    }
+	}
+	ACTIVE (1):
+	{
+	    //CLEAR BUFFER?!?!
+	    SEND_STRING 0, "'DCN - UNKNOWN STRING RECEIVED!'"
+	}
+    }
+}
+
+DEFINE_CALL 'BRAND_MODEL_SEND_STRING' (CHAR TXT[])
+LOCAL_VAR
+CHAR CHECKSUM
+CHAR BYTE
+CHAR LUNG
+{
+    BRAND_MODEL_MSG="TXT"
+
+    IF (BRAND_MODEL_CONNECTED)
+    {
+    
+	BRAND_MODEL_LAST_MSG_SENT="BRAND_MODEL_MSG"
+	SEND_STRING BRAND_MODEL_Client_Device,"BRAND_MODEL_LAST_MSG_SENT"
+    
+	IF (BRAND_MODEL_DEBUG)
+	    SEND_STRING 0:1:0,"'IP BRAND_MODEL_Client_Device Sending=',EXPLODE_HEX_STRING(BRAND_MODEL_LAST_MSG_SENT)"
+	    
+	ON[BRAND_MODEL_FLAG]
+	CANCEL_WAIT 'DELAY_BRAND_MODEL_FLAG_TALKING'
+	WAIT 10 'DELAY_BRAND_MODEL_FLAG_TALKING'
+	{
+	    IF (BRAND_MODEL_FLAG)
+	    {
+		OFF[BRAND_MODEL_TALKING]
+	    }
+	}
+    }
+}
+
+DEFINE_CALL 'BRAND_MODEL_FB_PANELS'
+{
+    [BRAND_MODEL_vdv_Device,255]=BRAND_MODEL_CONNECTED
+}
+
+DEFINE_FUNCTION CHAR[255] FIND_PARAMETERS(CHAR TXT[], CHAR DELIMIT[], INTEGER POS)
+LOCAL_VAR
+CHAR RESULT[255]
+{
+    RESULT=REMOVE_STRING(TXT,"DELIMIT",POS)
+    RETURN RESULT
+}
+
+DEFINE_FUNCTION CHAR[355] EXPLODE_HEX_STRING(CHAR TXT[])
+LOCAL_VAR
+CHAR RESULT[355]
+{
+    RESULT=""
+    FOR (IDX=1;IDX<=LENGTH_ARRAY(TXT);IDX++)
+    {
+	RESULT="RESULT,'$',FORMAT('%02x',TXT[IDX]),','"
+    }
+    
+    RETURN RESULT
+}
+
+(***********************************************************)
+(*                STARTUP CODE GOES BELOW                  *)
+(***********************************************************)
+DEFINE_START
+
+CREATE_BUFFER BRAND_MODEL_Client_Device,BRAND_MODEL_BUFF
+
+REBUILD_EVENT()
+
+TIMELINE_CREATE (TL_ID_HEARTBEAT,TL_ARRAY_HEARTBEAT,1,TIMELINE_RELATIVE,TIMELINE_REPEAT)
+
+TIMELINE_CREATE (TL_ID_FB_POLLING,TL_ARRAY_FB_POLLING,1,TIMELINE_RELATIVE,TIMELINE_REPEAT)
+
+(***********************************************************)
+(*                THE EVENTS GO BELOW                      *)
+(***********************************************************)
+DEFINE_EVENT
+
+DATA_EVENT[BRAND_MODEL_Client_Device]
+    {
+    ONLINE:
+    {
+	ON[BRAND_MODEL_CONNECTED]
+	
+	OFF[START_MON_MM_SENT]
+	OFF[START_MON_IN_SENT]
+	
+	SEND_STRING BRAND_MODEL_vdv_Device,"'DEVICE_ONLINE'"
+	
+	IF (BRAND_MODEL_DEBUG)
+	    SEND_STRING 0:1:0,'IP BRAND_MODEL_Client_Device Connection --> Online'
+	
+	IF (BRAND_MODEL_Client_Device.NUMBER)
+	{
+	// CONFIGURAZIONI SERIALI
+	
+	    SEND_COMMAND DATA.DEVICE,"'SET BAUD 115200,N,8,1 485 DISABLE'"
+	    SEND_COMMAND DATA.DEVICE,"'HSOFF'"
+	    SEND_COMMAND DATA.DEVICE,"'XOFF'"
+	}
+    }
+    
+    OFFLINE:
+    {
+	OFF[BRAND_MODEL_CONNECTED]
+	SEND_STRING BRAND_MODEL_vdv_Device,"'DEVICE_OFFLINE'"
+	
+	
+	IF (BRAND_MODEL_DEBUG)
+	    SEND_STRING 0:1:0,'IP BRAND_MODEL_Client_Device Connection --> Offline'
+	    
+	IF ((BRAND_MODEL_Client_Device.NUMBER == 0) AND (BRAND_MODEL_RECONNECT_TIME))
+	{
+	    CANCEL_WAIT 'BRAND_MODEL_DELAY_RECONNECT'
+	    WAIT BRAND_MODEL_RECONNECT_TIME 'BRAND_MODEL_DELAY_RECONNECT'
+	    {
+		CALL 'BRAND_MODEL_APERTURA_PORTA'
+	    }
+	}
+    }
+    
+    ONERROR:
+    {
+	IF (BRAND_MODEL_Client_Device.NUMBER == 0)
+	{
+	    IF (BRAND_MODEL_DEBUG)
+		SEND_STRING 0:1:0,"'IP BRAND_MODEL_Client_Device Connection --> Socket Error ',ITOA(DATA.NUMBER)"
+
+	    IF (DATA.NUMBER == 14)
+	    {
+		ON[BRAND_MODEL_CONNECTED]
+	    }
+	    
+	    SWITCH (DATA.NUMBER)
+	    {
+		CASE  2 : 
+		CASE  4 : 
+		CASE  6 : 
+		CASE  7 : 
+		CASE  8 : 
+		CASE 13 : 
+		CASE 14 : 
+		{
+		    CANCEL_WAIT 'BRAND_MODEL_DELAY_RECONNECT'
+		    CALL 'BRAND_MODEL_CHIUSURA_PORTA'
+		    IF (BRAND_MODEL_RECONNECT_TIME)
+		    {
+			WAIT BRAND_MODEL_RECONNECT_TIME 'BRAND_MODEL_DELAY_RECONNECT'
+			CALL 'BRAND_MODEL_APERTURA_PORTA'
+		    }
+		}
+		CASE  9 : 
+		CASE 17 :
+		{
+		    OFF[BRAND_MODEL_CONNECTED]
+		    CANCEL_WAIT 'BRAND_MODEL_DELAY_RECONNECT'
+		    IF (BRAND_MODEL_RECONNECT_TIME)
+		    {
+			WAIT BRAND_MODEL_RECONNECT_TIME 'BRAND_MODEL_DELAY_RECONNECT'
+			CALL 'BRAND_MODEL_APERTURA_PORTA'
+		    }
+		}
+	    }
+	}
+    }
+    STRING:
+    {
+	IF (BRAND_MODEL_DEBUG)
+	    SEND_STRING 0:1:0,"'IP BRAND_MODEL_Client_Device Receiving=',EXPLODE_HEX_STRING(DATA.TEXT)"
+	
+	// CALL 'BRAND_MODEL_PROCESSA_BUFFER'
+	CALL 'BRAND_MODEL_INTERPRETA_MESSAGGIO'
+    }
+}
+
+DATA_EVENT[BRAND_MODEL_vdv_Device]
+{
+    ONLINE:
+    {
+	IF ((BRAND_MODEL_Client_Device.NUMBER == 0) AND (BRAND_MODEL_Client_Device.PORT <> 0))
+	    CALL 'BRAND_MODEL_APERTURA_PORTA'
+
+	WAIT 300
+	{
+	    SEND_COMMAND BRAND_MODEL_vdv_Device,"'REINIT'"
+	}
+    }
+    
+    COMMAND:
+    {
+	BRAND_MODEL_vdv_BUFF="DATA.TEXT"
+	SELECT
+	{
+	    ACTIVE (FIND_STRING(BRAND_MODEL_vdv_BUFF,"'IP_ADDRESS='",1)) :
+	    {
+		REMOVE_STRING(BRAND_MODEL_vdv_BUFF,"'IP_ADDRESS='",1)
+		BRAND_MODEL_IP_ADDR="BRAND_MODEL_vdv_BUFF"
+	    }
+	    ACTIVE (FIND_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_ON='",1)) :
+	    {
+		REMOVE_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_ON='",1)
+		IF (BRAND_MODEL_DEBUG) SEND_STRING 0,"'MIC ON: ',BRAND_MODEL_vdv_BUFF"
+		CALL 'ACCENDI MIC' (BRAND_MODEL_vdv_BUFF)
+	    }
+	    ACTIVE (FIND_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_OFF='",1)) :
+	    {
+		REMOVE_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_OFF='",1)
+		IF (BRAND_MODEL_DEBUG) SEND_STRING 0,"'MIC OFF: ',BRAND_MODEL_vdv_BUFF"
+		CALL 'SPEGNI MIC'(BRAND_MODEL_vdv_BUFF)
+	    }
+	    ACTIVE (FIND_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_PRES_ON='",1)) :
+	    {
+		REMOVE_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_PRES_ON='",1)
+		IF (BRAND_MODEL_DEBUG) SEND_STRING 0,"'MIC PRES ON: ',BRAND_MODEL_vdv_BUFF"
+		CALL 'ACCENDI MIC PRESIDENTE'(BRAND_MODEL_vdv_BUFF)
+	    }
+	    ACTIVE (FIND_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_PRES_OFF='",1)) :
+	    {
+		REMOVE_STRING(BRAND_MODEL_vdv_BUFF,"'MIC_PRES_OFF='",1)
+		IF (BRAND_MODEL_DEBUG) SEND_STRING 0,"'MIC PRES OFF: ',BRAND_MODEL_vdv_BUFF"
+		CALL 'SPEGNI MIC PRESIDENTE'(BRAND_MODEL_vdv_BUFF)
+	    }
+	    ACTIVE (1) :
+		{
+		SWITCH (BRAND_MODEL_vdv_BUFF)
+		    {
+		    CASE 'REINIT':
+			{
+			REBUILD_EVENT()
+
+			CANCEL_WAIT 'BRAND_MODEL_DELAY_RECONNECT'
+			CALL 'BRAND_MODEL_CHIUSURA_PORTA'
+			IF (BRAND_MODEL_RECONNECT_TIME)
+			    {
+			    WAIT BRAND_MODEL_RECONNECT_TIME 'BRAND_MODEL_DELAY_RECONNECT'
+			      CALL 'BRAND_MODEL_APERTURA_PORTA'
+			    }
+		
+			}
+		    CASE 'DEBUG=ENABLE' : ON[BRAND_MODEL_DEBUG]
+		    CASE 'DEBUG=DISABLE' : OFF[BRAND_MODEL_DEBUG]
+		    }
+		}
+	    }
+	}
+    }
+
+TIMELINE_EVENT[TL_ID_HEARTBEAT]
+{    
+    CALL 'BRAND_MODEL_SEND_STRING' ("HEARTBEAT_STRING")
+}
+
+TIMELINE_EVENT[TL_ID_FB_POLLING]
+{
+    CALL 'BRAND_MODEL_FB_PANELS'    
+}
+
+(***********************************************************)
+(*            THE ACTUAL PROGRAM GOES BELOW                *)
+(***********************************************************)
+DEFINE_PROGRAM
+
+
+(***********************************************************)
+(*                     END OF PROGRAM                      *)
+(*        DO NOT PUT ANY CODE BELOW THIS COMMENT           *)
+(***********************************************************)
